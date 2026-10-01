@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Canteen</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            font-size: 28px;
+        }
+
+        header p {
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .cart-icon {
+            font-size: 18px;
+            font-weight: bold;
+            background: white;
+            color: #2575fc;
+            padding: 10px 18px;
+            border-radius: 25px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 25px;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: #2575fc;
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: 0.2s;
+        }
+
+        .food-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.12);
+        }
+
+        .food-emoji {
+            font-size: 45px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .food-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .category {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 19px;
+            font-weight: bold;
+            color: #2575fc;
+            margin-bottom: 15px;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            padding: 11px 15px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            width: 100%;
+            background: #2575fc;
+            color: white;
+        }
+
+        .add-btn:hover {
+            background: #125bd1;
+        }
+
+        .cart-section {
+            background: white;
+            margin-top: 35px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+
+        .cart-info {
+            flex: 1;
+        }
+
+        .cart-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .cart-price {
+            color: #555;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity-controls button {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            background: #eee;
+            color: #333;
+        }
+
+        .quantity-controls button:hover {
+            background: #ddd;
+        }
+
+        .cart-total {
+            text-align: right;
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #2575fc;
+        }
+
+        .customer-box {
+            margin-top: 20px;
+        }
+
+        .customer-box input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        .order-btn {
+            width: 100%;
+            margin-top: 15px;
+            background: #16a085;
+            color: white;
+            font-size: 17px;
+        }
+
+        .order-btn:hover {
+            background: #12876f;
+        }
+
+        .empty-cart {
+            color: #777;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* BILL */
+
+        .bill-section {
+            display: none;
+            margin-top: 35px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .bill-header {
+            text-align: center;
+            border-bottom: 2px dashed #ccc;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bill-header h2 {
+            color: #2575fc;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .bill-header p {
+            color: #777;
+        }
+
+        .bill-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .bill-table th,
+        .bill-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bill-table th {
+            background: #f5f7fb;
+        }
+
+        .bill-table td:last-child,
+        .bill-table th:last-child {
+            text-align: right;
+        }
+
+        .bill-total {
+            text-align: right;
+            font-size: 24px;
+            font-weight: bold;
+            color: #16a085;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #222;
+        }
+
+        .thank-you {
+            text-align: center;
+            margin-top: 25px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .print-btn {
+            display: block;
+            margin: 20px auto 0;
+            background: #2575fc;
+            color: white;
+            padding: 12px 25px;
+        }
+
+        .print-btn:hover {
+            background: #125bd1;
+        }
+
+        @media print {
+
+            body * {
+                visibility: hidden;
+            }
+
+            #billSection,
+            #billSection * {
+                visibility: visible;
+            }
+
+            #billSection {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+                display: block !important;
+            }
+
+            .print-btn {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .bill-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h1>🍽️ Smart Canteen</h1>
+        <p>Fresh Food • Easy Ordering • Smart Service</p>
+    </div>
+
+    <div class="cart-icon">
+        🛒 Cart: <span id="cartCount">0</span>
+    </div>
+</header>
+
+
+<div class="container">
+
+    <input
+            type="text"
+            id="searchBox"
+            class="search-box"
+            placeholder="🔍 Search food..."
+            onkeyup="searchFood()"
+    >
+
+
+    <h2 class="section-title">🍴 Food Menu</h2>
+
+    <div id="foodGrid" class="food-grid"></div>
+
+
+    <!-- CART -->
+
+    <div class="cart-section">
+
+        <h2>🛒 Your Cart</h2>
+
+        <div id="cartItems">
+            <p class="empty-cart">Your cart is empty.</p>
+        </div>
+
+        <div class="cart-total">
+            Total: ₹<span id="cartTotal">0</span>
+        </div>
+
+
+        <div class="customer-box">
+
+            <label for="customerName">
+                <strong>Customer Name</strong>
+            </label>
+
+            <input
+                    type="text"
+                    id="customerName"
+                    placeholder="Enter your name"
+            >
+
+        </div>
+
+
+        <button class="order-btn" onclick="placeOrder()">
+            🛍️ Place Order
+        </button>
+
+
+        <div id="successMessage"
+             class="message success-message">
+        </div>
+
+
+        <div id="errorMessage"
+             class="message error-message">
+        </div>
+
+    </div>
+
+
+    <!-- BILL -->
+
+    <div id="billSection" class="bill-section">
+
+        <div class="bill-header">
+
+            <h2>🍽️ SMART CANTEEN</h2>
+
+            <p>Order Receipt</p>
+
+        </div>
+
+
+        <div class="bill-details">
+
+            <div>
+                <strong>Order ID:</strong>
+                <span id="billOrderId">-</span>
+            </div>
+
+            <div>
+                <strong>Customer:</strong>
+                <span id="billCustomer">-</span>
+            </div>
+
+            <div>
+                <strong>Date:</strong>
+                <span id="billDate">-</span>
+            </div>
+
+            <div>
+                <strong>Status:</strong>
+                <span>PLACED</span>
+            </div>
+
+        </div>
+
+
+        <table class="bill-table">
+
+            <thead>
+
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+
+            </thead>
+
+            <tbody id="billItems">
+
+            </tbody>
+
+        </table>
+
+
+        <div class="bill-total">
+
+            Grand Total: ₹<span id="billTotal">0</span>
+
+        </div>
+
+
+        <p class="thank-you">
+            Thank you for ordering from Smart Canteen! 😊
+        </p>
+
+
+        <button class="print-btn" onclick="printBill()">
+            🖨️ Print Bill
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const API = "/api";
+
+    let foods = [];
+    let cart = [];
+
+
+    // =========================
+    // LOAD FOOD
+    // =========================
+
+    async function loadFoods() {
+
+        try {
+
+            const response = await fetch(API + "/foods/available");
+
+            if (!response.ok) {
+                throw new Error("Unable to load food");
+            }
+
+            foods = await response.json();
+
+            displayFoods(foods);
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("foodGrid").innerHTML =
+                "<p>Unable to load food menu.</p>";
+
+        }
+
+    }
+
+
+    // =========================
+    // DISPLAY FOOD
+    // =========================
+
+    function displayFoods(foodList) {
+
+        const grid = document.getElementById("foodGrid");
+
+        grid.innerHTML = "";
+
+
+        if (foodList.length === 0) {
+
+            grid.innerHTML =
+                "<p>No food items found.</p>";
+
+            return;
+        }
+
+
+        foodList.forEach(food => {
+
+            let emoji = getFoodEmoji(food.name);
+
+
+            const card = document.createElement("div");
+
+            card.className = "food-card";
+
+
+            card.innerHTML = `
+
+                <div class="food-emoji">
+                    ${emoji}
+                </div>
+
+                <h3>${food.name}</h3>
+
+                <div class="category">
+                    ${food.category || "Food"}
+                </div>
+
+                <div class="price">
+                    ₹${food.price}
+                </div>
+
+                <button
+                    class="add-btn"
+                    onclick="addToCart(${food.id})">
+
+                    ➕ Add to Cart
+
+                </button>
+
+            `;
+
+
+            grid.appendChild(card);
+
+        });
+
+    }
+
+
+    // =========================
+    // FOOD EMOJI
+    // =========================
+
+    function getFoodEmoji(name) {
+
+        name = name.toLowerCase();
+
+
+        if (name.includes("dosa")) {
+            return "🥞";
+        }
+
+        if (name.includes("poori") || name.includes("puri")) {
+            return "🍛";
+        }
+
+        if (name.includes("rice")) {
+            return "🍚";
+        }
+
+        if (name.includes("meals")) {
+            return "🍱";
+        }
+
+        if (name.includes("idli")) {
+            return "🍘";
+        }
+
+        if (name.includes("noodle")) {
+            return "🍜";
+        }
+
+        return "🍽️";
+    }
+
+
+    // =========================
+    // ADD TO CART
+    // =========================
+
+    function addToCart(foodId) {
+
+        const food = foods.find(f => f.id === foodId);
+
+        if (!food) {
+            return;
+        }
+
+
+        const existing = cart.find(
+            item => item.foodId === foodId
+        );
+
+
+        if (existing) {
+
+            existing.quantity++;
+
+        } else {
+
+            cart.push({
+
+                foodId: food.id,
+                foodName: food.name,
+                price: Number(food.price),
+                quantity: 1
+
+            });
+
+        }
+
+
+        updateCart();
+
+    }
+
+
+    // =========================
+    // UPDATE QUANTITY
+    // =========================
+
+    function increaseQuantity(foodId) {
+
+        const item = cart.find(
+            item => item.foodId === foodId
+        );
+
+        if (item) {
+            item.quantity++;
+        }
+
+        updateCart();
+
+    }
+
+
+    function decreaseQuantity(foodId) {
+
+        const item = cart.find(
+            item => item.foodId === foodId
+        );
+
+
+        if (!item) {
+            return;
+        }
+
+
+        item.quantity--;
+
+
+        if (item.quantity <= 0) {
+
+            cart = cart.filter(
+                item => item.foodId !== foodId
+            );
+
+        }
+
+
+        updateCart();
+
+    }
+
+
+    // =========================
+    // UPDATE CART
+    // =========================
+
+    function updateCart() {
+
+        const cartContainer =
+            document.getElementById("cartItems");
+
+
+        const totalElement =
+            document.getElementById("cartTotal");
+
+
+        const countElement =
+            document.getElementById("cartCount");
+
+
+        cartContainer.innerHTML = "";
+
+
+        if (cart.length === 0) {
+
+            cartContainer.innerHTML =
+                '<p class="empty-cart">Your cart is empty.</p>';
+
+            totalElement.textContent = "0";
+
+            countElement.textContent = "0";
+
+            return;
+        }
+
+
+        let total = 0;
+        let count = 0;
+
+
+        cart.forEach(item => {
+
+            const itemTotal =
+                item.price * item.quantity;
+
+
+            total += itemTotal;
+
+            count += item.quantity;
+
+
+            const div =
+                document.createElement("div");
+
+
+            div.className = "cart-item";
+
+
+            div.innerHTML = `
+
+                <div class="cart-info">
+
+                    <strong>
+                        ${item.foodName}
+                    </strong>
+
+                    <span class="cart-price">
+                        ₹${item.price} × ${item.quantity}
+                    </span>
+
+                </div>
+
+
+                <div class="quantity-controls">
+
+                    <button
+                        onclick="decreaseQuantity(${item.foodId})">
+                        −
+                    </button>
+
+                    <strong>
+                        ${item.quantity}
+                    </strong>
+
+                    <button
+                        onclick="increaseQuantity(${item.foodId})">
+                        +
+                    </button>
+
+                </div>
+
+
+                <strong>
+                    ₹${itemTotal}
+                </strong>
+
+            `;
+
+
+            cartContainer.appendChild(div);
+
+        });
+
+
+        totalElement.textContent = total;
+
+        countElement.textContent = count;
+
+    }
+
+
+    // =========================
+    // SEARCH
+    // =========================
+
+    function searchFood() {
+
+        const search =
+            document.getElementById("searchBox")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const filtered =
+            foods.filter(food =>
+                food.name
+                    .toLowerCase()
+                    .includes(search)
+            );
+
+
+        displayFoods(filtered);
+
+    }
+
+
+    // =========================
+    // PLACE ORDER
+    // =========================
+
+    async function placeOrder() {
+
+        const customerName =
+            document.getElementById("customerName")
+                .value
+                .trim();
+
+
+        hideMessages();
+
+
+        if (!customerName) {
+
+            showError(
+                "Please enter customer name."
+            );
+
+            return;
+        }
+
+
+        if (cart.length === 0) {
+
+            showError(
+                "Please add at least one item to your cart."
+            );
+
+            return;
+        }
+
+
+        const total =
+            cart.reduce(
+                (sum, item) =>
+                    sum + item.price * item.quantity,
+                0
+            );
+
+
+        const orderData = {
+
+            customerName: customerName,
+
+            totalAmount: total,
+
+            items: cart.map(item => ({
+
+                foodId: item.foodId,
+
+                foodName: item.foodName,
+
+                quantity: item.quantity,
+
+                price: item.price
+
+            }))
+
+        };
+
+
+        try {
+
+            const response = await fetch(
+                API + "/orders",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(orderData)
+
+                }
+            );
+
+
+            if (!response.ok) {
+
+                const errorText =
+                    await response.text();
+
+                throw new Error(
+                    errorText || "Order failed"
+                );
+
+            }
+
+
+            const order =
+                await response.json();
+
+
+            // Show success
+
+            showSuccess(
+                "Order placed successfully! 🎉"
+            );
+
+
+            // Generate bill
+
+            generateBill(
+                order,
+                customerName,
+                cart,
+                total
+            );
+
+
+            // Clear cart
+
+            cart = [];
+
+            updateCart();
+
+            document.getElementById(
+                "customerName"
+            ).value = "";
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showError(
+                "Unable to place order. Please try again."
+            );
+
+        }
+
+    }
+
+
+    // =========================
+    // GENERATE BILL
+    // =========================
+
+    function generateBill(
+        order,
+        customerName,
+        orderedItems,
+        total
+    ) {
+
+        const billSection =
+            document.getElementById("billSection");
+
+
+        /*
+         * Different backend implementations
+         * may return the order ID as:
+         * order.id
+         */
+
+        const orderId =
+            order && order.id
+                ? order.id
+                : "-";
+
+
+        document.getElementById(
+            "billOrderId"
+        ).textContent =
+            "#" + orderId;
+
+
+        document.getElementById(
+            "billCustomer"
+        ).textContent =
+            customerName;
+
+
+        const now = new Date();
+
+
+        document.getElementById(
+            "billDate"
+        ).textContent =
+            now.toLocaleString();
+
+
+        const billItems =
+            document.getElementById("billItems");
+
+
+        billItems.innerHTML = "";
+
+
+        orderedItems.forEach(item => {
+
+            const row =
+                document.createElement("tr");
+
+
+            const itemTotal =
+                item.price * item.quantity;
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${item.foodName}
+                </td>
+
+                <td>
+                    ${item.quantity}
+                </td>
+
+                <td>
+                    ₹${item.price}
+                </td>
+
+                <td>
+                    ₹${itemTotal}
+                </td>
+
+            `;
+
+
+            billItems.appendChild(row);
+
+        });
+
+
+        document.getElementById(
+            "billTotal"
+        ).textContent =
+            total;
+
+
+        billSection.style.display = "block";
+
+
+        // Scroll automatically to bill
+
+        billSection.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+
+    // =========================
+    // PRINT BILL
+    // =========================
+
+    function printBill() {
+
+        window.print();
+
+    }
+
+
+    // =========================
+    // MESSAGES
+    // =========================
+
+    function hideMessages() {
+
+        document.getElementById(
+            "successMessage"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "errorMessage"
+        ).style.display = "none";
+
+    }
+
+
+    function showSuccess(message) {
+
+        const element =
+            document.getElementById(
+                "successMessage"
+            );
+
+
+        element.textContent = message;
+
+        element.style.display = "block";
+
+    }
+
+
+    function showError(message) {
+
+        const element =
+            document.getElementById(
+                "errorMessage"
+            );
+
+
+        element.textContent = message;
+
+        element.style.display = "block";
+
+    }
+
+
+    // =========================
+    // START APPLICATION
+    // =========================
+
+    loadFoods();
+
+</script>
+
+</body>
+</html>
